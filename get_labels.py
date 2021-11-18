@@ -19,6 +19,8 @@ class ImagePath:
             if tmp == True:
                 if i not in self.list_path:
                     s = '{}\n'.format(i)
+                    s = s.replace('txt','jpg')
+                    s = s.replace('labels','images')
                     self.list_path.append(s)
             f.close()
     def export(self):
