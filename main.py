@@ -10,15 +10,16 @@ class DataAug:
         self.image = []
         self.aug = None
         self.dir = None
-    def load_images(self,path='*.jpg',c=0,dir='dataset'):
+    def load_images(self,path='*.jpg',dir='dataset'):
         self.dir = dir
         n_dir = path.split('/')[2]
         print(n_dir)
         print(os.path.exists(self.dir))
         self.dir = '{}/images/{}/'.format(self.dir,n_dir)
-        os.makedirs('{}'.format(self.dir))
+        if os.path.exists(self.dir) == False:
+            os.makedirs('{}'.format(self.dir))
         print(self.dir)
-        if c == 1:
+        if path == 'path.txt':
             f = open(path,'r')
             data = f.readlines()
             for i in data:
@@ -33,6 +34,7 @@ class DataAug:
         self.aug = iaa.Sequential([
             iaa.GaussianBlur(sigma=(0,3.0)), 
             iaa.LinearContrast((0.75,1.5)),
+            iaa.Multiply((0.5, 1.5), per_channel=0.5),
             # iaa.MultiplyAndAddToBrightness(add=(-50, 50))
         ])
         for i in self.image:
@@ -56,18 +58,17 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument('-p','--path',dest='path')
     ap.add_argument('-t','--text',dest='text')
-    ap.add_argument('-c','--choose',dest='choose')
+    #ap.add_argument('-c','--choose',dest='choose')
     ap.add_argument('-d','--dir',dest='dir')
     args = vars(ap.parse_args())
     d = DataAug()
     p = ImagePath('path.txt') 
     p.export()
     if args['path'] != None and args['dir'] != None:
-        n = args['dir']
         #os.mkdir(n)
-        d.load_images(args['path'],args['choose'],n)
+        d.load_images(args['path'],args['dir'])
     elif args['text'] != None and args['dir'] != None:
-        d.load_images(args['text'],args['choose'],n)
+        d.load_images(args['text'],args['dir'])
     else:
         d.load_images()
     d.generate_images()
